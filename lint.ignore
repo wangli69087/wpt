@@ -781,3 +781,6 @@ TESTHARNESS-IN-OTHER-TYPE: svg/svg-in-svg/svg-in-svg-circular-filter-reference-c
 
 PRINT STATEMENT: webdriver/tests/print/printcmd.py
 PRINT STATEMENT: webdriver/tests/print/user_prompts.py
+
+# Python 3-only files are not parsable as Python 2
+PARSE-FAILED: html/syntax/speculative-parsing/tools/generate.py
