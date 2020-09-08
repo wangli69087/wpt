@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Forced colors mode - :visited outline and column color with sys colors.</title>
+<style>
+  body {
+    background-image: url("resources/test-image.jpg");
+  }
+  a {
+    forced-color-adjust: none;
+  }
+</style>
+<a href="">
+  Visited background colors get their alpha channel from their non-visited
+  counterpart. This alpha channel should be preserved in forced colors mode.
+  <div id="ref" style="height:10px; width:10px; background-color: Canvas;"></div>
+</a>
+<script type="text/javascript">
+  var current_color = getComputedStyle(ref).backgroundColor;
+  var expected_color = current_color.replace(')', ', 0.5)').replace('rgb(', 'rgba(');
+  document.getElementById('ref').style.backgroundColor = expected_color;
+</script>

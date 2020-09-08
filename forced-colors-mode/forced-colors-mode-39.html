@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Forced colors mode - alpha channel.
+  Tests that the alpha channel for visited background colors are preserved in forced
+  colors mode.
+</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties">
+<link rel=match href="forced-colors-mode-39-ref.html">
+<style>
+  body {
+    background-image: url("resources/test-image.jpg");
+  }
+  a {
+    background-color: rgba(255, 0, 0, .5);
+  }
+  a:visited {
+    background-color: rgba(114, 173, 218, .3);
+  }
+</style>
+<a href="" id="link">
+  Visited background colors get their alpha channel from their non-visited
+  counterpart. This alpha channel should be preserved in forced colors mode.
+  <div style="height:10px; width:10px; background-color: inherit;"></div>
+</a>
