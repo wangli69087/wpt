@@ -491,7 +491,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.8.x'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/install_python.yml
@@ -530,7 +530,7 @@ jobs:
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '2.7.x'
+      versionSpec: '3.8.x'
   - template: tools/ci/azure/system_info.yml
   - template: tools/ci/azure/checkout.yml
   - template: tools/ci/azure/pip_install.yml
