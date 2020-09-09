@@ -1,0 +1,92 @@
+<!doctype html>
+<title>Test RTCPeerConnection.prototype.addIceCandidate</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+  'use strict';
+
+// This test may be flaky, so it's in its own file.
+// The test belongs in RTCPeerConnection-addIceCandidate.
+
+// Helper function to exchange ice candidates between
+// two local peer connections
+function exchangeIceCandidatesAndCheck(t, pc1, pc2) {
+  // private function
+  function doExchange(localPc, remotePc, tag) {
+    localPc.addEventListener('icecandidate', t.step_func(async event => {
+      const { candidate } = event;
+
+      // candidate may be null to indicate end of candidate gathering.
+      // There is ongoing discussion on w3c/webrtc-pc#1213
+      // that there should be an empty candidate string event
+      // for end of candidate for each m= section.
+      if (candidate && remotePc.signalingState !== 'closed') {
+        console.log('Candidate ' + tag + ': ' + candidate.candidate);
+        await remotePc.addIceCandidate(candidate);
+      }
+    }));
+  }
+
+  doExchange(pc1, pc2, 'from 1 to 2');
+  doExchange(pc2, pc1, 'from 2 to 1');
+}
+
+// Returns a promise that resolves when a |name| event is fired.
+function waitUntilEventAndLog(obj, name) {
+  return new Promise(r => {
+    console.log('Adding event listener');
+    obj.addEventListener(name, () => {
+      console.log('Resolving on event');
+      r();
+    });
+    console.log('Event listener added');
+  });
+}
+
+
+async function waitForStateAndLog(transport, state) {
+  while (transport.state != state) {
+    console.log('Transport state before wait is ' + transport.state);
+    await waitUntilEventAndLog(transport, 'statechange');
+    console.log('Transport state after wait is ' + transport.state);
+  }
+}
+
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
+  const transceiver = pc1.addTransceiver('video');
+
+  exchangeIceCandidatesAndCheck(t, pc1, pc2);
+  await exchangeOffer(pc1, pc2);
+  /* await new Promise((resolve) => {
+    if (pc1.iceGatheringState == 'complete') {
+      resolve();
+      return;
+    };
+    pc1.addEventListener('icegatheringstatechange', () => {
+      if (pc1.iceGatheringState == 'complete') {
+        resolve();
+      }
+    });
+  });
+  // Ensure that any queued events such as candidate surfacing complete
+  // before exchangeAnswer.
+  await new Promise((resolve) => {
+    t.step_timeout(resolve, 0);
+  }); */
+  await exchangeAnswer(pc1, pc2);
+  console.log('offer-delay waiting');
+  await waitForStateAndLog(transceiver.sender.transport, 'connected');
+  const transceiver2 = pc2.getTransceivers()[0];
+  console.log(transceiver.sender.transport.iceTransport.getSelectedCandidatePair().local.type);
+  console.log(transceiver.sender.transport.iceTransport.getSelectedCandidatePair().remote.type);
+  console.log(transceiver2.sender.transport.iceTransport.getSelectedCandidatePair().local.type);
+  console.log(transceiver2.sender.transport.iceTransport.getSelectedCandidatePair().remote.type);
+}, 'If all candidates arrive at callee before answer is generated, connection should work');
+
+</script>
