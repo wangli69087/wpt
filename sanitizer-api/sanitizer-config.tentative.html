@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="support/testcases.sub.js"></script>
+</head>
+
+<body>
+<script>
+    test(t => {
+      assert_throws_js(TypeError, _ => {let s = new Sanitizer()});
+    }, "SanitizerAPI creator without config.");
+
+    test(t => {
+      let s = new Sanitizer({});
+      assert_true(s instanceof Sanitizer);
+      assert_true(s.creationOptions instanceof Object);
+      assert_equals(JSON.stringify(s.creationOptions), "{}");
+    }, "SanitizerAPI creator with empty config.");
+
+    test(t => {
+      let s = new Sanitizer(null);
+      assert_true(s instanceof Sanitizer);
+      assert_true(s.creationOptions instanceof Object);
+      assert_equals(JSON.stringify(s.creationOptions), "{}");
+    }, "SanitizerAPI creator with null as config.");
+
+    test(t => {
+      assert_throws_js(TypeError, _ => {let s = new Sanitizer(undefined)});
+    }, "SanitizerAPI creator with undefined as config.");
+
+    test(t => {
+      let s = new Sanitizer({testConfig: [1,2,3], attr: ["test", "i", "am"]});
+      assert_true(s instanceof Sanitizer);
+      assert_true(s.creationOptions instanceof Object);
+      assert_equals(JSON.stringify(s.creationOptions), "{}");
+    }, "SanitizerAPI creator with config ignore unknown values.");
+</script>
+</body>
+</html>
