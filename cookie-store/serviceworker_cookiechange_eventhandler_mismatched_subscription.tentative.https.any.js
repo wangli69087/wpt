@@ -21,7 +21,7 @@ promise_test(async testCase => {
   await kServiceWorkerActivatedPromise;
 
   const subscriptions = [
-    { name: 'cookie-name', matchType: 'equals', url: `${kScope}/path` },
+    { name: 'cookie-name', url: `${kScope}/path` },
   ];
   await registration.cookies.subscribe(subscriptions);
   testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
